@@ -81,7 +81,7 @@ function App() {
 
       {/* ✅ 체크박스 UI */}
       <div style={{ marginTop: '1rem' }}>
-        <p>음식점 유형 선택:</p>
+        <p>맛집 유형 선택:</p>
         {categoryOptions.map((category) => (
           <label key={category} style={{ marginRight: '1rem' }}>
             <input
