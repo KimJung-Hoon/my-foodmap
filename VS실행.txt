@@ -8,3 +8,22 @@ npm start
 [Express 실행]
 cd server
 node index.js
+
+(배포) render 
+
+=> 초기 코드
+
+git init
+git add .
+git commit -m "처음 업로드"
+git branch -M main
+git remote add origin https://github.com/내아이디/맛집앱.git
+git push -u origin main
+
+=> 코드 수정 후
+
+git add .
+git commit -m "처음 업로드"
+git push
+
+
