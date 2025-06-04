@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function App() {
   const [region, setRegion] = useState('');
   const [results, setResults] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]); 
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const mapRef = useRef(null);
 
   const categoryOptions = ['한식', '중식', '일식', '양식', '분식', '카페'];
 
@@ -18,10 +20,39 @@ function App() {
       const data = await response.json();
       console.log('받은 데이터:', data);
       setResults(data);
+      setSelectedPlace(null); // 검색 시 선택 초기화
     } catch (error) {
       console.error('검색 중 에러:', error);
     }
   };
+
+  // ✅ 선택된 장소만 지도에 표시
+  useEffect(() => {
+    if (window.kakao && window.kakao.maps && selectedPlace) {
+      const container = mapRef.current;
+      const options = {
+        center: new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x),
+        level: 3,
+      };
+
+      const map = new window.kakao.maps.Map(container, options);
+
+      const markerPosition = new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x);
+      new window.kakao.maps.Marker({
+        map,
+        position: markerPosition,
+        title: selectedPlace.place_name,
+      });
+    }
+  }, [selectedPlace]);
+
+  const filteredResults = results.filter(place => {
+    const hasPhone = place.phone && place.phone.trim() !== '';
+    const categoryMatch =
+      selectedCategories.length === 0 ||
+      selectedCategories.some(cat => place.category_name?.includes(cat));
+    return hasPhone && categoryMatch;
+  });
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
@@ -62,39 +93,39 @@ function App() {
         ))}
       </div>
 
+      {/* ✅ 지도 */}
+      <div
+        ref={mapRef}
+        style={{ width: '100%', height: '400px', marginTop: '2rem', border: '1px solid #ccc' }}
+      ></div>
+
       {/* ✅ 결과 렌더링 */}
       <ul style={{ marginTop: '2rem', listStyle: 'none', padding: 0 }}>
-        {Array.isArray(results) &&
-          results.filter(place => {
-            const hasPhone = place.phone && place.phone.trim() !== '';
-            const categoryMatch =
-              selectedCategories.length === 0 ||
-              selectedCategories.some(cat => place.category_name?.includes(cat));
-            return hasPhone && categoryMatch;
-          }).length === 0 && (
-            <li>🔍 조건에 맞는 맛집이 없습니다.</li>
+        {filteredResults.length === 0 && (
+          <li>🔍 조건에 맞는 맛집이 없습니다.</li>
         )}
 
-        {Array.isArray(results) &&
-          results
-            .filter(place => {
-              const hasPhone = place.phone && place.phone.trim() !== '';
-              const categoryMatch =
-                selectedCategories.length === 0 ||
-                selectedCategories.some(cat => place.category_name?.includes(cat));
-              return hasPhone && categoryMatch;
-            })
-            .map((place, index) => (
-              <li key={index} style={{ marginBottom: '1rem' }}>
-                <strong>{place.place_name}</strong><br />
-                📍 {place.address_name}<br />
-                ☎️ {place.phone}<br />
-                🔗 <a href={place.place_url} target="_blank" rel="noopener noreferrer">
-                  카카오 지도에서 보기
-                </a>
-                <hr />
-              </li>
-            ))}
+        {filteredResults.map((place, index) => (
+          <li
+            key={index}
+            onClick={() => setSelectedPlace(place)}
+            style={{
+              marginBottom: '1rem',
+              cursor: 'pointer',
+              backgroundColor: selectedPlace?.id === place.id ? '#f0f0f0' : 'white',
+              padding: '0.5rem',
+              borderRadius: '8px'
+            }}
+          >
+            <strong>{place.place_name}</strong><br />
+            📍 {place.address_name}<br />
+            ☎️ {place.phone}<br />
+            🔗 <a href={place.place_url} target="_blank" rel="noopener noreferrer">
+              {place.place_name} 바로가기
+            </a>
+            <hr />
+          </li>
+        ))}
       </ul>
     </div>
   );
