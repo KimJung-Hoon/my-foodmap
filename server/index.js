@@ -21,7 +21,8 @@ app.post('/api/search', async (req, res) => {
         Authorization: `KakaoAK ${KAKAO_API_KEY}`
       },
       params: {
-        query: `${keyword} 맛집`
+        query: `${keyword} 맛집`,
+        category_group_code: 'FD6'
       }
     });
 

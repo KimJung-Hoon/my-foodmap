@@ -13,8 +13,8 @@ function App() {
       });
 
       const data = await response.json();
-      console.log('받은 데이터:', data); // 확인용
-      setResults(data); // ✅ documents가 아닌 배열 그 자체
+      console.log('받은 데이터:', data);
+      setResults(data);
     } catch (error) {
       console.error('검색 중 에러:', error);
     }
@@ -46,7 +46,10 @@ function App() {
             <li key={index} style={{ marginBottom: '1rem' }}>
               <strong>{place.place_name}</strong><br />
               📍 {place.address_name}<br />
-              ☎️ {place.phone || '전화번호 없음'}
+              ☎️ {place.phone || '전화번호 없음'}<br />
+              🔗 <a href={place.place_url} target="_blank" rel="noopener noreferrer">
+                카카오 지도에서 보기
+              </a>
               <hr />
             </li>
           ))}
