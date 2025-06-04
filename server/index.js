@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // ✅ 당신의 실제 카카오 REST API 키
 const KAKAO_API_KEY = 'deee9a6f35a8e3531da237728bc74c95';

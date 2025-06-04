@@ -2,6 +2,9 @@
 cd client
 npm start
 
+
+(배포) vercel
+
 [Express 실행]
 cd server
 node index.js
