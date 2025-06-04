@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './App.css'; // ✅ 반드시 존재해야 함
 
 function App() {
   const [region, setRegion] = useState('');
@@ -26,23 +27,31 @@ function App() {
     }
   };
 
-  // ✅ 선택된 장소만 지도에 표시
+  // ✅ 지도 표시 (선택된 장소가 없으면 서울시청 중심)
   useEffect(() => {
-    if (window.kakao && window.kakao.maps && selectedPlace) {
+    if (window.kakao && window.kakao.maps && mapRef.current) {
       const container = mapRef.current;
+
+      const center = selectedPlace
+        ? new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x)
+        : new window.kakao.maps.LatLng(37.5662952, 126.9779451); // 서울시청 좌표
+
       const options = {
-        center: new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x),
+        center,
         level: 3,
       };
 
       const map = new window.kakao.maps.Map(container, options);
 
-      const markerPosition = new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x);
-      new window.kakao.maps.Marker({
-        map,
-        position: markerPosition,
-        title: selectedPlace.place_name,
-      });
+      // ✅ 선택된 장소가 있을 경우에만 마커 표시
+      if (selectedPlace) {
+        const markerPosition = new window.kakao.maps.LatLng(selectedPlace.y, selectedPlace.x);
+        new window.kakao.maps.Marker({
+          map,
+          position: markerPosition,
+          title: selectedPlace.place_name,
+        });
+      }
     }
   }, [selectedPlace]);
 
@@ -93,11 +102,8 @@ function App() {
         ))}
       </div>
 
-      {/* ✅ 지도 */}
-      <div
-        ref={mapRef}
-        style={{ width: '100%', height: '400px', marginTop: '2rem', border: '1px solid #ccc' }}
-      ></div>
+      {/* ✅ 지도 (서울시청 기본 중심, 반응형 높이) */}
+      <div ref={mapRef} className="map-container"></div>
 
       {/* ✅ 결과 렌더링 */}
       <ul style={{ marginTop: '2rem', listStyle: 'none', padding: 0 }}>
