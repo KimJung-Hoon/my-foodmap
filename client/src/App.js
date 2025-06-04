@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>📍 지역별 맛집 검색기</h1>
+      <h1>📍 지역별 맛집 검색</h1>
 
       <input
         type="text"
